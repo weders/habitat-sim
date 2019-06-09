@@ -112,8 +112,10 @@ class Agent(object):
         self, agent_config: AgentConfiguration, reconfigure_sensors: bool = True
     ):
         r"""Re-create the agent with a new configuration
+
         Args:
-            agent_config (AgentConfiguration): New config
+            agent_config (:class:`AgentConfiguration`): New config
+
             reconfigure_sensors (bool): Whether or not to also reconfigure the sensors, there
                 are specific cases where false makes sense, but most cases are covered by true
         """
@@ -155,7 +157,7 @@ class Agent(object):
 
         Args:
             action_id (Any): ID of the action.
-                Retreives the action from agent_config.action_space
+                Retreives the action from :attr:`agent_config.action_space`
 
         Returns:
             bool: Whether or not the action taken resulted in a collision

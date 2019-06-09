@@ -53,6 +53,9 @@ class SceneNodeControl(abc.ABC):
 
     See examples/new_actions.py for an example of how to add new actions _outside_
     the core habitat_sim package
+
+    Args:
+        body_action (bool): Whether or not the control function manipulates the agents body or the sensors
     """
 
     body_action: bool = False

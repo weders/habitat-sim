@@ -85,7 +85,9 @@ def quat_from_angle_axis(theta: float, axis: np.array) -> np.quaternion:
 def quat_from_two_vectors(v0: np.array, v1: np.array) -> np.quaternion:
     r"""Creates a quaternion that rotates the frist vector onto the second vector
 
-    v1 = (q * np.quaternion(0, *v0) * q.inverse()).imag
+    Calculates the quaternion q such that
+
+    ``v1 = quat_rotate_vector(q, v0)``
 
     Args:
         v0 (np.array): The starting vector, does not need to be a unit vector
@@ -131,8 +133,10 @@ def angle_between_quats(q1: np.quaternion, q2: np.quaternion) -> float:
 
 
 def quat_rotate_vector(q: np.quaternion, v: np.array) -> np.array:
-    r"""Helper function to rotate a vector by a quaternion, simply does
-    v = (q * np.quaternion(0, *v) * q.inverse()).imag
+    r"""Helper function to rotate a vector by a quaternion.
+
+    Does
+    ``v = (q * np.quaternion(0, *v) * q.inverse()).imag``
 
     Args:
         q (np.quaternion): The quaternion to rotate the vector with

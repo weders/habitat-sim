@@ -13,8 +13,8 @@ class GreedyGeodesicFollower(object):
     r"""Greedily fits actions to follow the geodesic shortest path
 
     Args:
-        pathfinder (hsim.PathFinder): Instance of the pathfinder that has the correct navmesh already loaded
-        agent (habitat_sim.agent.Agent): Agent to fit actions for.  This agent's current configuration is used
+        pathfinder (:class:`habitat_sim.bindings.PathFinder`): Instance of the pathfinder that has the correct navmesh already loaded
+        agent (:class:`Agent`): Agent to fit actions for.  This agent's current configuration is used
             to specify the actions.  The fitted actions will also correspond to keys in the agents action_space.
             `None` is used to signify that the goal location has been reached
         goal_radius (Optional[float]): Specifies how close the agent must get to the goal in order for it to be considered

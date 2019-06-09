@@ -14,6 +14,8 @@ modules = [
     "PinholeCamera",
     "SceneGraph",
     "SceneNode",
+    "SemanticLevel",
+    "SemanticScene",
     "Sensor",
     "SensorSpec",
     "SensorType",

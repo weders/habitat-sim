@@ -20,12 +20,30 @@ from habitat_sim.nav import GreedyGeodesicFollower
 
 @attr.s(auto_attribs=True, slots=True)
 class Configuration(object):
+    r"""Specifies how to configure the simulator.
+
+    Ties together a backend config,
+    :attr:`sim_cfg` and a list of agent configurations :attr:`agents`
+
+    Args:
+        sim_cfg (:class:`SimulatorConfiguration`): The configuration of the backend of the simulator
+        agents (List[:class:`AgentConfiguration`]): A list of agent configurations
+    """
     sim_cfg: Optional[hsim.SimulatorConfiguration] = None
     agents: Optional[List[AgentConfiguration]] = None
 
 
 @attr.s(auto_attribs=True)
 class Simulator:
+    r"""The core class of habitat-sim
+
+    The simulator ties together the backend, the agent, controls functions,
+    and collision checking/pathfinding
+
+    Args:
+        config (:class:`Configuration`): configuration for the simulator
+    """
+
     config: Configuration
     agents: List[Agent] = attr.ib(factory=list, init=False)
     pathfinder: hsim.PathFinder = attr.ib(default=None, init=False)
@@ -141,7 +159,14 @@ class Simulator:
         return self._sim.sample_random_agent_state(state_to_return)
 
     @property
-    def semantic_scene(self):
+    def semantic_scene(self) -> hsim.SemanticScene:
+        r"""The semantic scene graph
+
+        Type: :class:`habitat_sim.bindings.SemanticScene`
+
+        Warning:
+            Not avaliable for all datasets
+        """
         return self._sim.semantic_scene
 
     def get_sensor_observations(self):

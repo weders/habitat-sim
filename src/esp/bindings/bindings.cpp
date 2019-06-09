@@ -485,12 +485,18 @@ PYBIND11_MODULE(habitat_sim_bindings, m) {
       .def(py::init(&SemanticScene::create<>))
       .def_static("load_mp3d_house", &SemanticScene::loadMp3dHouse, R"(
         Loads a SemanticScene from a Matterport3D House format file into passed
-        :py:class:`SemanticScene`'.
+        :py:class:`SemanticScene`.
       )",
                   "file"_a, "scene"_a, "rotation"_a)
       .def_property_readonly("aabb", &SemanticScene::aabb)
-      .def_property_readonly("categories", &SemanticScene::categories)
-      .def_property_readonly("levels", &SemanticScene::levels)
+      .def_property_readonly("categories", &SemanticScene::categories, R"(
+        All semantic categories in the house
+      )")
+      .def_property_readonly("levels", &SemanticScene::levels, R"(
+        All levels in the house
+
+        Type: :class:`SemanticLevel`
+      )")
       .def_property_readonly("regions", &SemanticScene::regions)
       .def_property_readonly("objects", &SemanticScene::objects)
       .def_property_readonly("semantic_index_map",
