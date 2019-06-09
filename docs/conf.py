@@ -59,7 +59,7 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    "sphinx_autodoc_typehints",  # needs to load after napoleon
+    # "sphinx_autodoc_typehints",  # use for sphinx ~1.7.6; load after napoleon
 ]
 
 napoleon_use_ivar = True
