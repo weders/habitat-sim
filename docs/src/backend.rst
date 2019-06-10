@@ -1,11 +1,9 @@
 Backend
 =======
 
-.. currentmodule:: habitat_sim
+A dump of the docs for all the backend classes
 
-.. autoclass:: SimulatorConfiguration
-   :members:
-   :undoc-members:
+.. currentmodule:: habitat_sim
 
 .. automodule:: habitat_sim.bindings
    :members:

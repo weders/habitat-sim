@@ -413,7 +413,12 @@ PYBIND11_MODULE(habitat_sim_bindings, m) {
   // ==== SemanticCategory ====
   py::class_<SemanticCategory, SemanticCategory::ptr>(m, "SemanticCategory")
       .def("index", &SemanticCategory::index, "mapping"_a = "")
-      .def("name", &SemanticCategory::name, "mapping"_a = "");
+      .def("name", &SemanticCategory::name, "mapping"_a = "")
+      .doc() = R"(
+        Base class for all semantic categories.
+        Different datasets and semantic types (i.e. object or region) will have different information,
+        so there are specific implementations, i.e. :class:`Mp3dObjectCategory` and :class:`Mp3dRegionCategory`
+        )";
 
   // === Mp3dObjectCategory ===
   py::class_<Mp3dObjectCategory, SemanticCategory, Mp3dObjectCategory::ptr>(
@@ -448,11 +453,26 @@ PYBIND11_MODULE(habitat_sim_bindings, m) {
 
   // ==== SemanticRegion ====
   py::class_<SemanticRegion, SemanticRegion::ptr>(m, "SemanticRegion")
-      .def_property_readonly("id", &SemanticRegion::id)
+      .def_property_readonly("id", &SemanticRegion::id, R"(
+        The ID of the region, of the form ``<level_id>_<region_id>``
+
+        For some datasets, ``<region_id>`` portion of the full ID will be globally unique,
+        while in other datasets, it will only be unique for each level.
+
+        Type: str
+      )")
       .def_property_readonly("level", &SemanticRegion::level)
       .def_property_readonly("aabb", &SemanticRegion::aabb)
-      .def_property_readonly("category", &SemanticRegion::category)
-      .def_property_readonly("objects", &SemanticRegion::objects);
+      .def_property_readonly("category", &SemanticRegion::category, R"(
+        The semantic category of the region
+
+        Type: :class:`SemanticCategory`
+      )")
+      .def_property_readonly("objects", &SemanticRegion::objects, R"(
+        All objects in the region
+
+        Type: :class:`SemanticObject`
+      )");
 
   // ==== SuncgSemanticRegion ====
   py::class_<SuncgSemanticRegion, SemanticRegion, SuncgSemanticRegion::ptr>(
@@ -465,11 +485,22 @@ PYBIND11_MODULE(habitat_sim_bindings, m) {
 
   // ==== SemanticObject ====
   py::class_<SemanticObject, SemanticObject::ptr>(m, "SemanticObject")
-      .def_property_readonly("id", &SemanticObject::id)
+      .def_property_readonly("id", &SemanticObject::id, R"(
+        The ID of the object, of the form ``<level_id>_<region_id>_<object_id>``
+
+        For some datasets, ``<object_id>`` part of the full ID will be globally unique,
+        while in other datasets, it will only be unique for each region.
+
+        Type: str
+      )")
       .def_property_readonly("region", &SemanticObject::region)
       .def_property_readonly("aabb", &SemanticObject::aabb)
       .def_property_readonly("obb", &SemanticObject::obb)
-      .def_property_readonly("category", &SemanticObject::category);
+      .def_property_readonly("category", &SemanticObject::category, R"(
+        The semantic category of the object.
+
+        Type: :class:`SemanticCategory`
+      )");
 
   // ==== SuncgSemanticObject ====
   py::class_<SuncgSemanticObject, SemanticObject, SuncgSemanticObject::ptr>(
@@ -491,14 +522,24 @@ PYBIND11_MODULE(habitat_sim_bindings, m) {
       .def_property_readonly("aabb", &SemanticScene::aabb)
       .def_property_readonly("categories", &SemanticScene::categories, R"(
         All semantic categories in the house
+
+        Type: :class:`SemanticCategory`
       )")
       .def_property_readonly("levels", &SemanticScene::levels, R"(
         All levels in the house
 
         Type: :class:`SemanticLevel`
       )")
-      .def_property_readonly("regions", &SemanticScene::regions)
-      .def_property_readonly("objects", &SemanticScene::objects)
+      .def_property_readonly("regions", &SemanticScene::regions, R"(
+        All regions in the house
+
+        Type: :class:`SemanticRegion`
+      )")
+      .def_property_readonly("objects", &SemanticScene::objects, R"(
+        All object in the house
+
+        Type: :class:`SemanticObject`
+      )")
       .def_property_readonly("semantic_index_map",
                              &SemanticScene::getSemanticIndexMap)
       .def("semantic_index_to_object_index",
