@@ -19,6 +19,20 @@ modules = [
     "ShortestPath",
     "SimulatorConfiguration",
     "geo",
+    "Camera",
+    "Renderer",
+    "SemanticScene",
+    "HitRecord",
+    "Observation",
+    "MapStringString",
+    "VectorGreedyCodes",
+    "SceneConfiguration",
+    "BBox",
+    "SemanticCategory",
+    "SemanticLevel",
+    "SemanticObject",
+    "SemanticRegion",
+    "OBB",
 ]
 
 from habitat_sim._ext.habitat_sim_bindings import Simulator as SimulatorBackend

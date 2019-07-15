@@ -7,3 +7,5 @@
 from .agent import *
 from .controls import *
 from .default_controls import *
+
+__all__ = agent.__all__ + controls.__all__ + default_controls.__all__
