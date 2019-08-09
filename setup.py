@@ -256,10 +256,10 @@ class CMakeBuild(build_ext):
             return
 
         if not args.headless:
-            link_dst = osp.join(self.build_temp, "viewer")
+            link_dst = osp.join(self.build_temp, "sampler")
             if not osp.islink(link_dst):
                 os.symlink(
-                    osp.abspath(osp.join(self.build_temp, "utils/viewer/viewer")),
+                    osp.abspath(osp.join(self.build_temp, "utils/sampler/sampler")),
                     link_dst,
                 )
 
