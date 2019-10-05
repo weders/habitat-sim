@@ -263,6 +263,13 @@ class CMakeBuild(build_ext):
                     link_dst,
                 )
 
+            link_dst = osp.join(self.build_temp, "viewer")
+            if not osp.islink(link_dst):
+                os.symlink(
+                    osp.abspath(osp.join(self.build_temp, "utils/viewer/viewer")),
+                    link_dst,
+                )
+
         self.create_compile_commands()
 
     def run_cmake(self, cmake_args):

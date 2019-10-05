@@ -2,16 +2,20 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-#include "Viewer.h"
+#include "Sampler.h"
 
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/EigenIntegration/GeometryIntegration.h>
+#include <Magnum/EigenIntegration/Integration.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
 #include <sophus/so3.hpp>
 
 #include "Drawable.h"
 #include "esp/io/io.h"
+
+#include <fstream>
+#include <cmath>
 
 using namespace Magnum;
 using namespace Math::Literals;
@@ -24,9 +28,9 @@ constexpr float cameraHeight = 1.5f;
 namespace esp {
 namespace gfx {
 
-Viewer::Viewer(const Arguments& arguments)
+Sampler::Sampler(const Arguments& arguments)
     : Platform::Application{arguments,
-                            Configuration{}.setTitle("Viewer").setWindowFlags(
+                            Configuration{}.setTitle("Sampler").setWindowFlags(
                                 Configuration::WindowFlag::Resizable),
                             GLConfiguration{}.setColorBufferSize(
                                 Vector4i(8, 8, 8, 8))},
@@ -56,6 +60,36 @@ Viewer::Viewer(const Arguments& arguments)
   auto& rootNode = sceneGraph.getRootNode();
   auto& drawables = sceneGraph.getDrawables();
   const std::string& file = args.value("scene");
+
+  // create camera file
+  file_ = args.value("scene");
+
+  std::cout << file_.length() << std::endl;
+
+  char split;
+  int position = file_.length();
+  std::cout << position << std::endl;
+
+  while (position >= 0) {
+      split = file_[position];
+
+      if (split == '/') {
+          break;
+      }
+      position -= 1;
+  }
+  std::cout << position << std::endl;
+
+  cameraFile_ = "";
+
+  for (int i = 0; i <= position; i++) {
+      std::cout << cameraFile_ << std::endl;
+      cameraFile_ += file_[i];
+  }
+
+  cameraFile_ += "cameras.txt";
+  std::cout << cameraFile_ << std::endl;
+
   const assets::AssetInfo info = assets::AssetInfo::fromPath(file);
   if (!resourceManager_.loadScene(info, &rootNode, &drawables)) {
     LOG(ERROR) << "cannot load " << file;
@@ -95,14 +129,13 @@ Viewer::Viewer(const Arguments& arguments)
                 << quatf(agentBodyNode_->rotation()).coeffs().transpose();
       LOG(INFO) << "Distance to closest obstacle: "
                 << pathfinder_->distanceToClosestObstacle(currentPosition);
-
       return currentPosition;
     });
 
     const vec3f position = pathfinder_->getRandomNavigablePoint();
     agentBodyNode_->setTranslation(Vector3(position));
 
-    LOG(INFO) << "Viewer initialization is done. ";
+    LOG(INFO) << "Sampler initialization is done. ";
     renderCamera_->node().setTransformation(
         cameraNode_->absoluteTransformation());
   }  // namespace gfx
@@ -119,7 +152,7 @@ Vector3 positionOnSphere(Magnum::SceneGraph::Camera3D& camera,
   return (result * Vector3::yScale(-1.0f)).normalized();
 }
 
-void Viewer::drawEvent() {
+void Sampler::drawEvent() {
   GL::defaultFramebuffer.clear(GL::FramebufferClear::Color |
                                GL::FramebufferClear::Depth);
   if (sceneID_.size() <= 0)
@@ -132,23 +165,23 @@ void Viewer::drawEvent() {
   swapBuffers();
 }
 
-void Viewer::viewportEvent(ViewportEvent& event) {
+void Sampler::viewportEvent(ViewportEvent& event) {
   GL::defaultFramebuffer.setViewport({{}, framebufferSize()});
   renderCamera_->getMagnumCamera().setViewport(event.windowSize());
 }
 
-void Viewer::mousePressEvent(MouseEvent& event) {
+void Sampler::mousePressEvent(MouseEvent& event) {
   if (event.button() == MouseEvent::Button::Left)
     previousPosition_ =
         positionOnSphere(renderCamera_->getMagnumCamera(), event.position());
 }
 
-void Viewer::mouseReleaseEvent(MouseEvent& event) {
+void Sampler::mouseReleaseEvent(MouseEvent& event) {
   if (event.button() == MouseEvent::Button::Left)
     previousPosition_ = Vector3();
 }
 
-void Viewer::mouseScrollEvent(MouseScrollEvent& event) {
+void Sampler::mouseScrollEvent(MouseScrollEvent& event) {
   if (!event.offset().y()) {
     return;
   }
@@ -165,7 +198,7 @@ void Viewer::mouseScrollEvent(MouseScrollEvent& event) {
   redraw();
 }
 
-void Viewer::mouseMoveEvent(MouseMoveEvent& event) {
+void Sampler::mouseMoveEvent(MouseMoveEvent& event) {
   if (!(event.buttons() & MouseMoveEvent::Button::Left)) {
     return;
   }
@@ -184,7 +217,7 @@ void Viewer::mouseMoveEvent(MouseMoveEvent& event) {
   redraw();
 }
 
-void Viewer::keyPressEvent(KeyEvent& event) {
+void Sampler::keyPressEvent(KeyEvent& event) {
   const auto key = event.key();
   switch (key) {
     case KeyEvent::Key::Esc:
@@ -230,6 +263,51 @@ void Viewer::keyPressEvent(KeyEvent& event) {
   renderCamera_->node().setTransformation(
       cameraNode_->absoluteTransformation());
   redraw();
+
+  std::ofstream camera_file(cameraFile_, std::ios_base::app);
+
+  const auto position = Magnum::EigenIntegration::cast<vec3f>(renderCamera_->node().absoluteTransformation().translation());
+  const auto rotation = quatf(renderCamera_->node().rotation()).coeffs().transpose();
+
+  std::cout << "rotation 2 " << rotation << std::endl;
+  std::cout << "rotation 2 elements " << rotation[0] << " " << rotation[1] << " " << rotation[2] << " " << rotation[3] << std::endl;
+
+
+    //  const auto rotation = Magnum::EigenIntegration::cast<mat3f>(renderCamera_->node().absoluteTransformation().rotation());
+    //
+    //  double qw, qx, qy, qz;
+    //
+    //  qw = std::sqrt(1. + rotation(0, 0) + rotation(1, 1) + rotation(2, 2));
+    //  qx = (rotation(2, 1) - rotation(1, 2)) / (4 * qw);
+    //  qy = (rotation(0, 2) - rotation(2, 0)) / (4 * qw);
+    //  qz = (rotation(1, 0) - rotation(0, 1)) / (4 * qw);
+    //
+    //  std::cout << qw << " " << qx << " " << qy << " " << qz << std::endl;
+    //
+    //  std::cout << "position 1 " << position << std::endl;
+    //  std::cout << rotation << std::endl;
+    //  std::cout << "rotation 1 " << rotation(0, 0) << " " << rotation(0, 1) << " " << rotation(0, 2) << " " << rotation(1, 0) << " " << rotation(1, 1) << " " << rotation(1, 2) << " " << rotation(2, 0) << " " << rotation(2, 1) << " " << rotation(2, 2) << std::endl;
+
+    //  camera_file << position[0] << " " << position[1] << " " << position[2] << " " << rotation(0, 0) << " " << rotation(0, 1) << " " << rotation(0, 2) << " " << rotation(1, 0) << " " << rotation(1, 1) << " " << rotation(1, 2) << " " << rotation(2, 0) << " " << rotation(2, 1) << " " << rotation(2, 2) << "\n";
+
+  camera_file << position[0] << " " << position[1] << " " << position[2] << " " << " " << rotation[0] << " " << rotation[1] << " " << rotation[2] << " " << rotation[3] << "\n";
+  camera_file.close();
+
+  writeCamera(*renderCamera_);
+
+}
+
+void Sampler::writeCamera(RenderCamera &camera) {
+
+    const auto position = Magnum::EigenIntegration::cast<vec3f>(camera.node().absoluteTransformation().translation());
+    const auto rotation = quatf(camera.node().rotation()).coeffs().transpose();
+    std::cout << "position 2" << position << std::endl;
+    std::cout << "rotation 2 " << rotation << std::endl;
+    std::cout << "rotation 2 elements " << rotation[0] << " " << rotation[1] << " " << rotation[2] << " " << rotation[3] << std::endl;
+
+
+
+
 }
 
 }  // namespace gfx

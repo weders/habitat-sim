@@ -5,6 +5,7 @@
 #include "Sensor.h"
 
 #include <Magnum/EigenIntegration/Integration.h>
+#include <iostream>
 
 namespace esp {
 namespace sensor {

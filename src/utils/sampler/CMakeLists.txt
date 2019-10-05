@@ -1,9 +1,9 @@
-set(viewer_SOURCES sampler.cpp)
+set(sampler_SOURCES sampler.cpp)
 
 #set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
-add_executable(viewer ${viewer_SOURCES})
+add_executable(sampler ${sampler_SOURCES})
 
-target_link_libraries(viewer
+target_link_libraries(sampler
   PRIVATE
     assets
     gfx

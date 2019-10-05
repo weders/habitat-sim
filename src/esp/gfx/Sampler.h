@@ -30,9 +30,9 @@ class Arguments;
 namespace esp {
 namespace gfx {
 
-class Viewer : public Magnum::Platform::Application {
+class Sampler : public Magnum::Platform::Application {
  public:
-  explicit Viewer(const Arguments& arguments);
+  explicit Sampler(const Arguments& arguments);
 
  private:
   void drawEvent() override;
@@ -42,6 +42,7 @@ class Viewer : public Magnum::Platform::Application {
   void mouseMoveEvent(MouseMoveEvent& event) override;
   void mouseScrollEvent(MouseScrollEvent& event) override;
   void keyPressEvent(KeyEvent& event) override;
+  void writeCamera(RenderCamera& camera);
 
   assets::ResourceManager resourceManager_;
   scene::SceneManager sceneManager_;
@@ -52,6 +53,9 @@ class Viewer : public Magnum::Platform::Application {
   nav::PathFinder::ptr pathfinder_;
   scene::ObjectControls controls_;
   Magnum::Vector3 previousPosition_;
+
+  std::string file_;
+  std::string cameraFile_;
 
   bool computeActionPath_;
   vec3f goalPos_;
